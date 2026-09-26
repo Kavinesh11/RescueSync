@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: 220 24% 8%;
+  --foreground: 210 20% 92%;
+
+  --card: 220 22% 11%;
+  --card-foreground: 210 20% 92%;
+
+  --popover: 220 22% 11%;
+  --popover-foreground: 210 20% 92%;
+
+  --primary: 27 96% 55%;
+  --primary-foreground: 20 40% 8%;
+
+  --secondary: 220 18% 18%;
+  --secondary-foreground: 210 20% 92%;
+
+  --muted: 220 18% 16%;
+  --muted-foreground: 215 14% 62%;
+
+  --accent: 199 89% 55%;
+  --accent-foreground: 210 20% 96%;
+
+  --destructive: 0 74% 56%;
+  --destructive-foreground: 210 20% 96%;
+
+  --success: 158 64% 42%;
+  --success-foreground: 210 20% 96%;
+
+  --border: 220 16% 20%;
+  --input: 220 16% 20%;
+  --ring: 27 96% 55%;
+
+  --radius: 0.75rem;
+
+  --engineer: 27 96% 55%;
+  --medic: 199 89% 55%;
+  --rubble: 25 45% 38%;
+  --rubble-cleared: 30 35% 66%;
+  --victim: 350 78% 56%;
+  --wall: 220 14% 22%;
+  --floor: 220 20% 13%;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-sm: calc(var(--radius) - 0.5rem);
+
+  --color-engineer: hsl(var(--engineer));
+  --color-medic: hsl(var(--medic));
+  --color-rubble: hsl(var(--rubble));
+  --color-rubble-cleared: hsl(var(--rubble-cleared));
+  --color-victim: hsl(var(--victim));
+  --color-wall: hsl(var(--wall));
+  --color-floor: hsl(var(--floor));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: normal;
+  }
+}
