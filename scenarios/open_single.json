@@ -1,0 +1,17 @@
+{
+  "name": "open_single",
+  "description": "A single Medic on an open map with no obstacles — the optimal path length should equal plain A*'s answer.",
+  "grid": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "clear_time": 2,
+  "rescue_time": 2,
+  "max_time": 30,
+  "agents": [
+    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [3, 5]}
+  ]
+}
