@@ -11,7 +11,7 @@
   "rescue_time": 2,
   "max_time": 30,
   "agents": [
-    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [1, 5]},
-    {"id": "M2", "role": "medic", "start": [1, 5], "victim": [1, 1]}
+    {"id": "M2", "role": "medic", "start": [1, 5], "victim": [1, 1]},
+    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [1, 5]}
   ]
 }
