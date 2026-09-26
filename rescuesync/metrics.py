@@ -18,14 +18,8 @@ def compute_metrics(plan_result) -> Dict:
     makespan = max(finish_times) if finish_times else 0
     sum_of_costs = sum(finish_times) if finish_times else 0
 
-    wait_actions = 0
-    medic_dependency_wait = 0
-    for a in agents.values():
-        sched = a.schedule
-        waits = sum(1 for i in range(1, len(sched)) if sched[i] == sched[i - 1])
-        wait_actions += waits
-        if isinstance(a, MedicAgent):
-            medic_dependency_wait += waits
+    wait_actions = sum(a.wait_count for a in agents.values())
+    medic_dependency_wait = sum(a.wait_count for a in agents.values() if isinstance(a, MedicAgent))
 
     return {
         "mode": plan_result.mode,

@@ -15,6 +15,7 @@ class BaseAgent:
     schedule: List[Cell] = field(default_factory=list)
     failed: bool = False
     finish_time: Optional[int] = None
+    wait_count: int = 0
 
 
 @dataclass

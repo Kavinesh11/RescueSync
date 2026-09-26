@@ -92,7 +92,16 @@ def plan_all(scenario: dict, mode: Mode) -> PlanResult:
 
 
 def _apply_path(agent: BaseAgent, path_with_time) -> None:
+    """Append a (cell, t) path to the agent's schedule.
+
+    A step where the cell repeats is a WAIT action taken by the search
+    itself (e.g. to dodge another robot, or to wait for rubble to open) --
+    distinct from the CLEAR/RESCUE hold padding added by `_pad_schedule`,
+    which is a deliberate action, not a wait.
+    """
     for cell, _t in path_with_time[1:]:
+        if cell == agent.schedule[-1]:
+            agent.wait_count += 1
         agent.schedule.append(cell)
 
 
