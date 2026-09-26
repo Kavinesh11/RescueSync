@@ -1,5 +1,5 @@
 import { AlertCircle, Loader2, Radar } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AgentList } from '@/components/AgentList'
 import { GridCanvas } from '@/components/GridCanvas'
