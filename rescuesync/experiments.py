@@ -38,9 +38,16 @@ def random_scenario(
     size: int = 15,
     num_engineers: int = 3,
     num_medics: int = 5,
-    num_rubble: int = 4,
     max_time: int = 200,
 ) -> dict:
+    """A left/right split map with one rubble "door" per Engineer.
+
+    The interior is cut in half by a solid wall at the middle column, pierced
+    only by `num_engineers` rubble cells (one door per Engineer). Some Medics
+    start on one side and are rescued on the other, so they are genuinely
+    unreachable in Independent/Cooperative mode -- not just inconvenienced by
+    a single obstacle they could otherwise walk around.
+    """
     rng = random.Random(seed)
     grid: List[List[str]] = [["." for _ in range(size)] for _ in range(size)]
     for c in range(size):
@@ -50,41 +57,44 @@ def random_scenario(
         grid[r][0] = "#"
         grid[r][size - 1] = "#"
 
-    free_cells = [(r, c) for r in range(1, size - 1) for c in range(1, size - 1)]
-    rng.shuffle(free_cells)
+    mid = size // 2
+    for r in range(1, size - 1):
+        grid[r][mid] = "#"
 
-    def pop_cell() -> Cell:
-        return free_cells.pop()
+    interior_rows = list(range(1, size - 1))
+    door_rows = rng.sample(interior_rows, min(num_engineers, len(interior_rows)))
+    doors: List[Cell] = []
+    for r in door_rows:
+        grid[r][mid] = "R"
+        doors.append((r, mid))
 
-    def adjacent_free(cell: Cell):
-        r, c = cell
-        for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            nr, nc = r + dr, c + dc
-            if 0 < nr < size - 1 and 0 < nc < size - 1 and grid[nr][nc] == ".":
-                return (nr, nc)
-        return None
-
-    rubble_cells: List[Cell] = []
-    for _ in range(num_rubble):
-        rc = pop_cell()
-        grid[rc[0]][rc[1]] = "R"
-        rubble_cells.append(rc)
+    reserved = {(r, mid - 1) for r in door_rows} | {(r, mid + 1) for r in door_rows}
+    left_cells = [(r, c) for r in range(1, size - 1) for c in range(1, mid) if (r, c) not in reserved]
+    right_cells = [(r, c) for r in range(1, size - 1) for c in range(mid + 1, size - 1) if (r, c) not in reserved]
+    rng.shuffle(left_cells)
+    rng.shuffle(right_cells)
 
     agents = []
-    for i in range(num_engineers):
-        start = pop_cell()
-        rubble = rubble_cells[i % len(rubble_cells)]
-        stand = adjacent_free(rubble) or pop_cell()
-        park = pop_cell()
+    for i, door in enumerate(doors):
+        r, _c = door
+        start = left_cells.pop()
+        park = left_cells.pop()
         agents.append({
             "id": f"E{i + 1}", "role": "engineer",
-            "start": list(start), "rubble": list(rubble),
-            "stand": list(stand), "park": list(park),
+            "start": list(start), "rubble": list(door),
+            "stand": [r, mid - 1], "park": list(park),
         })
 
     for i in range(num_medics):
-        start = pop_cell()
-        victim = pop_cell()
+        crosses = rng.random() < 0.6
+        if crosses:
+            if rng.random() < 0.5:
+                start, victim = left_cells.pop(), right_cells.pop()
+            else:
+                start, victim = right_cells.pop(), left_cells.pop()
+        else:
+            side = left_cells if rng.random() < 0.5 else right_cells
+            start, victim = side.pop(), side.pop()
         grid[victim[0]][victim[1]] = "V"
         agents.append({
             "id": f"M{i + 1}", "role": "medic",
@@ -112,8 +122,7 @@ def run_experiments(output_dir: str = "experiments/output") -> List[dict]:
             num_engineers = max(1, n // 3)
             num_medics = n - num_engineers
             scenario = random_scenario(
-                seed=seed, size=15, num_engineers=num_engineers,
-                num_medics=num_medics, num_rubble=max(2, num_engineers),
+                seed=seed, size=15, num_engineers=num_engineers, num_medics=num_medics,
             )
             for mode in (Mode.INDEPENDENT, Mode.COOPERATIVE, Mode.RESCUESYNC):
                 result = plan_all(scenario, mode)
