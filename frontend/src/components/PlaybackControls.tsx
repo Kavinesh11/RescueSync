@@ -1,0 +1,72 @@
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+
+interface PlaybackControlsProps {
+  t: number
+  maxT: number
+  playing: boolean
+  speed: number
+  onTChange: (t: number) => void
+  onPlayingChange: (playing: boolean) => void
+  onSpeedChange: (speed: number) => void
+  onRestart: () => void
+}
+
+export function PlaybackControls({
+  t,
+  maxT,
+  playing,
+  speed,
+  onTChange,
+  onPlayingChange,
+  onSpeedChange,
+  onRestart,
+}: PlaybackControlsProps) {
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-secondary/30 p-3">
+      <div className="flex items-center gap-2">
+        <Button size="icon" variant="outline" onClick={onRestart} title="Restart">
+          <RotateCcw />
+        </Button>
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => onTChange(Math.max(0, t - 1))}
+          disabled={t === 0}
+          title="Step back"
+        >
+          <ChevronLeft />
+        </Button>
+        <Button size="icon" onClick={() => onPlayingChange(!playing)} title={playing ? 'Pause' : 'Play'}>
+          {playing ? <Pause /> : <Play />}
+        </Button>
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => onTChange(Math.min(maxT, t + 1))}
+          disabled={t === maxT}
+          title="Step forward"
+        >
+          <ChevronRight />
+        </Button>
+        <div className="ml-2 font-mono text-sm text-muted-foreground">
+          t = {t} / {maxT}
+        </div>
+        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+          Speed
+          <Slider
+            className="w-24"
+            min={1}
+            max={10}
+            step={1}
+            value={[speed]}
+            onValueChange={([v]) => onSpeedChange(v)}
+          />
+        </div>
+      </div>
+      <Slider min={0} max={Math.max(maxT, 1)} step={1} value={[t]} onValueChange={([v]) => onTChange(v)} />
+    </div>
+  )
+}
