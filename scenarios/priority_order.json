@@ -1,0 +1,18 @@
+{
+  "name": "priority_order",
+  "description": "Demonstrates prioritized planning's incompleteness: MA passes through the single connector cell on its way further, MB's own goal IS that connector cell. Planned as [MA, MB] both succeed; reversed to [MB, MA], MB claims the connector forever and MA fails. This is a known limitation of Cooperative A* — CBS would fix it.",
+  "grid": [
+    "#######",
+    "#.....#",
+    "###.###",
+    "#.....#",
+    "#######"
+  ],
+  "clear_time": 2,
+  "rescue_time": 2,
+  "max_time": 30,
+  "agents": [
+    {"id": "MA", "role": "medic", "start": [1, 1], "victim": [3, 5]},
+    {"id": "MB", "role": "medic", "start": [3, 1], "victim": [2, 3]}
+  ]
+}
