@@ -1,0 +1,19 @@
+{
+  "name": "victim_walled_in",
+  "description": "The victim is sealed in by walls on all four sides — no rubble, no route. Every mode must report failure within the time horizon rather than hang.",
+  "grid": [
+    "#######",
+    "#.....#",
+    "#.###.#",
+    "#.#V#.#",
+    "#.###.#",
+    "#.....#",
+    "#######"
+  ],
+  "clear_time": 2,
+  "rescue_time": 2,
+  "max_time": 20,
+  "agents": [
+    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [3, 3]}
+  ]
+}
