@@ -3,18 +3,18 @@
   "grid": [
     "###############",
     "#......R......#",
-    "#.............#",
-    "#..R..........#",
-    "#.V...........#",
-    "#...VVR....R..#",
-    "#.....RV......#",
-    "#.........V...#",
-    "#.............#",
-    "#.............#",
-    "#............V#",
-    "#.............#",
-    "#V............#",
-    "#....V..R.....#",
+    "#......R......#",
+    "#......#......#",
+    "#......#....VV#",
+    "#......R......#",
+    "#......#.V..V.#",
+    "#......#.V....#",
+    "#......#......#",
+    "#......#...V..#",
+    "#......#..V...#",
+    "#......R......#",
+    "#......#......#",
+    "#......#.....V#",
     "###############"
   ],
   "clear_time": 2,
@@ -25,103 +25,103 @@
       "id": "E1",
       "role": "engineer",
       "start": [
-        3,
-        10
+        6,
+        5
       ],
       "rubble": [
-        13,
-        8
+        11,
+        7
       ],
       "stand": [
-        12,
-        8
+        11,
+        6
       ],
       "park": [
-        3,
-        1
+        6,
+        2
       ]
     },
     {
       "id": "E2",
       "role": "engineer",
       "start": [
-        11,
-        10
+        4,
+        2
       ],
       "rubble": [
-        3,
-        3
+        2,
+        7
       ],
       "stand": [
         2,
-        3
+        6
       ],
       "park": [
-        2,
-        10
+        3,
+        4
       ]
     },
     {
       "id": "E3",
       "role": "engineer",
       "start": [
-        12,
-        9
+        13,
+        2
       ],
       "rubble": [
         1,
         7
       ],
       "stand": [
-        2,
-        7
+        1,
+        6
       ],
       "park": [
-        9,
-        5
+        3,
+        2
       ]
     },
     {
       "id": "E4",
       "role": "engineer",
       "start": [
-        1,
-        9
+        10,
+        4
       ],
       "rubble": [
-        6,
-        6
+        5,
+        7
       ],
       "stand": [
-        7,
+        5,
         6
       ],
       "park": [
         1,
-        8
+        5
       ]
     },
     {
       "id": "M1",
       "role": "medic",
       "start": [
-        2,
-        11
+        1,
+        4
       ],
       "victim": [
-        5,
-        4
+        7,
+        9
       ]
     },
     {
       "id": "M2",
       "role": "medic",
       "start": [
-        5,
-        8
+        2,
+        13
       ],
       "victim": [
-        10,
+        4,
         13
       ]
     },
@@ -130,73 +130,73 @@
       "role": "medic",
       "start": [
         13,
-        11
+        8
       ],
       "victim": [
-        12,
-        1
+        6,
+        12
       ]
     },
     {
       "id": "M4",
       "role": "medic",
       "start": [
-        4,
-        12
+        13,
+        1
       ],
       "victim": [
-        13,
-        5
+        4,
+        12
       ]
     },
     {
       "id": "M5",
       "role": "medic",
       "start": [
-        9,
-        4
+        11,
+        11
       ],
       "victim": [
-        5,
-        5
+        9,
+        11
       ]
     },
     {
       "id": "M6",
       "role": "medic",
       "start": [
-        9,
-        11
+        6,
+        1
       ],
       "victim": [
-        6,
-        7
+        13,
+        13
       ]
     },
     {
       "id": "M7",
       "role": "medic",
       "start": [
-        1,
-        2
+        3,
+        5
       ],
       "victim": [
-        4,
-        2
+        6,
+        9
       ]
     },
     {
       "id": "M8",
       "role": "medic",
       "start": [
-        13,
-        2
+        8,
+        10
       ],
       "victim": [
-        7,
+        10,
         10
       ]
     }
   ],
-  "description": "A 15x15 map with 12 robots and 6 rubble cells, seeded for determinism. RescueSync must produce 0 collisions at this scale."
+  "description": "A 15x15 map split by a rubble-doored wall, 12 robots total. RescueSync must produce 0 collisions and rescue every victim that Mode 1/2 leave stranded on the other side."
 }
