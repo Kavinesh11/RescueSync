@@ -40,7 +40,7 @@ def test_03_head_on_swap_uses_pocket(load_scenario):
     result, m = _run(scenario, Mode.RESCUESYNC)
     assert m["collisions"] == 0
     assert m["victims_rescued"] == m["victims_total"]
-    pocket = (2, 4)
+    pocket = (2, 5)
     used_pocket = any(pocket in agent.schedule for agent in result.agents.values())
     assert used_pocket
 

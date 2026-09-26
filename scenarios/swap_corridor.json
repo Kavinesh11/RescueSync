@@ -1,17 +1,17 @@
 {
   "name": "swap_corridor",
-  "description": "Two robots head-on in a single-width corridor with one side pocket. A swap conflict must be avoided by waiting or ducking into the pocket — Mode 2/3 finish with 0 collisions.",
+  "description": "Two robots pass each other in a single-width corridor with one side pocket, without either one's goal colliding with the other's start cell. A swap conflict must be avoided by waiting or ducking into the pocket — Mode 2/3 finish with 0 collisions and both robots succeed.",
   "grid": [
-    "#######",
-    "#V...V#",
-    "###.###",
-    "#######"
+    "#########",
+    "#.V...V.#",
+    "#####.###",
+    "#########"
   ],
   "clear_time": 2,
   "rescue_time": 2,
   "max_time": 30,
   "agents": [
-    {"id": "M2", "role": "medic", "start": [1, 5], "victim": [1, 1]},
-    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [1, 5]}
+    {"id": "M1", "role": "medic", "start": [1, 1], "victim": [1, 6]},
+    {"id": "M2", "role": "medic", "start": [1, 7], "victim": [1, 2]}
   ]
 }
