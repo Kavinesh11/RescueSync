@@ -1,0 +1,18 @@
+{
+  "name": "engineer_unreachable",
+  "description": "The Engineer is walled into a corridor that never reaches its rubble's stand cell. The Engineer must fail cleanly, and the Medic — whose only route crosses that rubble — must also fail cleanly within the time horizon, never hang.",
+  "grid": [
+    "#######",
+    "#.#.#.#",
+    "#.#R#.#",
+    "#.#V#.#",
+    "#######"
+  ],
+  "clear_time": 2,
+  "rescue_time": 2,
+  "max_time": 15,
+  "agents": [
+    {"id": "E1", "role": "engineer", "start": [1, 1], "rubble": [2, 3], "stand": [1, 3], "park": [3, 3]},
+    {"id": "M1", "role": "medic", "start": [1, 3], "victim": [3, 3]}
+  ]
+}
