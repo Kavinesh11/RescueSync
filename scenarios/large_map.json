@@ -1,0 +1,202 @@
+{
+  "name": "large_map",
+  "grid": [
+    "###############",
+    "#......R......#",
+    "#.............#",
+    "#..R..........#",
+    "#.V...........#",
+    "#...VVR....R..#",
+    "#.....RV......#",
+    "#.........V...#",
+    "#.............#",
+    "#.............#",
+    "#............V#",
+    "#.............#",
+    "#V............#",
+    "#....V..R.....#",
+    "###############"
+  ],
+  "clear_time": 2,
+  "rescue_time": 2,
+  "max_time": 150,
+  "agents": [
+    {
+      "id": "E1",
+      "role": "engineer",
+      "start": [
+        3,
+        10
+      ],
+      "rubble": [
+        13,
+        8
+      ],
+      "stand": [
+        12,
+        8
+      ],
+      "park": [
+        3,
+        1
+      ]
+    },
+    {
+      "id": "E2",
+      "role": "engineer",
+      "start": [
+        11,
+        10
+      ],
+      "rubble": [
+        3,
+        3
+      ],
+      "stand": [
+        2,
+        3
+      ],
+      "park": [
+        2,
+        10
+      ]
+    },
+    {
+      "id": "E3",
+      "role": "engineer",
+      "start": [
+        12,
+        9
+      ],
+      "rubble": [
+        1,
+        7
+      ],
+      "stand": [
+        2,
+        7
+      ],
+      "park": [
+        9,
+        5
+      ]
+    },
+    {
+      "id": "E4",
+      "role": "engineer",
+      "start": [
+        1,
+        9
+      ],
+      "rubble": [
+        6,
+        6
+      ],
+      "stand": [
+        7,
+        6
+      ],
+      "park": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "M1",
+      "role": "medic",
+      "start": [
+        2,
+        11
+      ],
+      "victim": [
+        5,
+        4
+      ]
+    },
+    {
+      "id": "M2",
+      "role": "medic",
+      "start": [
+        5,
+        8
+      ],
+      "victim": [
+        10,
+        13
+      ]
+    },
+    {
+      "id": "M3",
+      "role": "medic",
+      "start": [
+        13,
+        11
+      ],
+      "victim": [
+        12,
+        1
+      ]
+    },
+    {
+      "id": "M4",
+      "role": "medic",
+      "start": [
+        4,
+        12
+      ],
+      "victim": [
+        13,
+        5
+      ]
+    },
+    {
+      "id": "M5",
+      "role": "medic",
+      "start": [
+        9,
+        4
+      ],
+      "victim": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "M6",
+      "role": "medic",
+      "start": [
+        9,
+        11
+      ],
+      "victim": [
+        6,
+        7
+      ]
+    },
+    {
+      "id": "M7",
+      "role": "medic",
+      "start": [
+        1,
+        2
+      ],
+      "victim": [
+        4,
+        2
+      ]
+    },
+    {
+      "id": "M8",
+      "role": "medic",
+      "start": [
+        13,
+        2
+      ],
+      "victim": [
+        7,
+        10
+      ]
+    }
+  ],
+  "description": "A 15x15 map with 12 robots and 6 rubble cells, seeded for determinism. RescueSync must produce 0 collisions at this scale."
+}
