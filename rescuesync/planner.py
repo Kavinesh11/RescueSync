@@ -64,7 +64,13 @@ def plan_all(scenario: dict, mode: Mode) -> PlanResult:
 
     table = ReservationTable(max_time=max_time)
     for a in agents:
-        table.reserve_vertex(a.start, 0, a.id)
+        # Every agent physically occupies its start cell until it is actually
+        # planned and moves. Placeholder-reserve the whole horizon so that an
+        # earlier-priority agent can't plan a final resting place on top of a
+        # not-yet-planned agent that hasn't had the chance to step aside yet.
+        # `_plan_engineer`/`_plan_medic` release exactly what each agent uses
+        # once its real path is known (or re-freeze it forever on failure).
+        table.reserve_window(a.start, 0, max_time, a.id)
         a.schedule = [a.start]
 
     open_time: Dict[Cell, float] = {r: INF for r in grid.rubble}
@@ -94,6 +100,13 @@ def _pad_schedule(agent: BaseAgent, upto_t: int) -> None:
     last = agent.schedule[-1]
     while len(agent.schedule) - 1 < upto_t:
         agent.schedule.append(last)
+
+
+def _freeze_in_place(table: ReservationTable, agent: BaseAgent, max_time: int) -> None:
+    """An agent that fails mid-mission never moves again from here on out."""
+    last_cell = agent.schedule[-1]
+    last_t = len(agent.schedule) - 1
+    table.reserve_window(last_cell, last_t, max_time, agent.id)
 
 
 def _plan_engineer(
@@ -128,6 +141,8 @@ def _plan_engineer(
         eng.finish_time = len(eng.schedule) - 1
         return
 
+    table.clear_agent_window(eng.start, 0, max_time, eng.id)
+
     path1 = space_time_astar(
         grid, eng.start, eng.stand, table, open_time,
         start_time=0, hold_steps=clear_time, final=False,
@@ -135,6 +150,7 @@ def _plan_engineer(
     )
     if path1 is None:
         eng.failed = True
+        _freeze_in_place(table, eng, max_time)
         return
     table.reserve_path(path1, eng.id)
     arrival = path1[-1][1]
@@ -154,6 +170,7 @@ def _plan_engineer(
     )
     if path2 is None:
         eng.failed = True
+        _freeze_in_place(table, eng, max_time)
         return
     table.reserve_path(path2, eng.id)
     arrival2 = path2[-1][1]
@@ -185,6 +202,8 @@ def _plan_medic(
         med.finish_time = len(med.schedule) - 1
         return
 
+    table.clear_agent_window(med.start, 0, max_time, med.id)
+
     path = space_time_astar(
         grid, med.start, med.victim, table, open_time,
         start_time=0, hold_steps=rescue_time, final=True,
@@ -192,6 +211,7 @@ def _plan_medic(
     )
     if path is None:
         med.failed = True
+        _freeze_in_place(table, med, max_time)
         return
     table.reserve_path(path, med.id)
     arrival = path[-1][1]

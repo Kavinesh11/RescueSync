@@ -39,6 +39,14 @@ class ReservationTable:
         for t in range(t_start, t_end + 1):
             self.reserve_vertex(cell, t, agent_id)
 
+    def clear_agent_window(self, cell: Cell, t_start: int, t_end: int, agent_id: str) -> None:
+        """Remove `agent_id`'s own reservations, e.g. to release a placeholder."""
+        t_end = min(t_end, self.max_time)
+        for t in range(t_start, t_end + 1):
+            key = (cell, t)
+            if self.vertex.get(key) == agent_id:
+                del self.vertex[key]
+
     def reserve_path(self, path: List[Tuple[Cell, int]], agent_id: str) -> None:
         """Reserve every vertex and edge of a (cell, t) path, in order."""
         for cell, t in path:
