@@ -33,7 +33,7 @@ python main.py --scenario scenarios/blocked_victim.json --mode rescuesync
 # Same, but with the Pygame demo (Space=play/pause, arrows=step, 1/2/3=mode, R=restart)
 python main.py --scenario scenarios/blocked_victim.json --mode cooperative --gui
 
-# Run the test suite (26 tests: unit + the 11 scenario tests)
+# Run the test suite (33 tests: unit + the 11 scenario tests + regressions)
 pytest
 
 # Regenerate the Review-2 experiment graphs -> experiments/output/*.png
@@ -70,7 +70,7 @@ step, `1`/`2`/`3` switch mode, `R` restart.
 ```
 rescuesync/     the graded core engine — grid, agents, A*, planner, simulator, metrics
 scenarios/      9 JSON scenario files (see CLAUDE.md §10 for what each proves)
-tests/          pytest: unit tests + the 11 scenario tests
+tests/          pytest: unit tests + the 11 scenario tests + regressions
 backend/        FastAPI wrapper exposing rescuesync/ over HTTP
 frontend/       React + Vite + TypeScript + Tailwind + shadcn/ui
 main.py         CLI entry point (headless or --gui)

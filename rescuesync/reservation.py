@@ -47,6 +47,11 @@ class ReservationTable:
             if self.vertex.get(key) == agent_id:
                 del self.vertex[key]
 
+    def release_agent(self, agent_id: str) -> None:
+        """Remove every vertex and edge reservation held by `agent_id`."""
+        self.vertex = {k: v for k, v in self.vertex.items() if v != agent_id}
+        self.edge = {k: v for k, v in self.edge.items() if v != agent_id}
+
     def reserve_path(self, path: List[Tuple[Cell, int]], agent_id: str) -> None:
         """Reserve every vertex and edge of a (cell, t) path, in order."""
         for cell, t in path:

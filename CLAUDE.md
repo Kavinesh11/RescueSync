@@ -58,7 +58,7 @@ RescueSync/
 │   ├── experiments.py       # random scenario generator + Review-2 graphs (matplotlib)
 │   └── visualizer.py        # Pygame demo (secondary to the web UI, see §8)
 ├── scenarios/*.json         # 8 hand-designed scenarios + 1 generated stress-test map
-├── tests/                   # pytest: unit tests + the 11 scenario tests from §12
+├── tests/                   # pytest: unit tests + the scenario tests from §12
 ├── backend/app.py           # FastAPI: exposes plan_all()/metrics to the web UI
 └── frontend/                 # React + Vite + TypeScript + Tailwind + shadcn/ui
 ```
@@ -232,6 +232,18 @@ re-establishes a permanent placeholder at wherever it actually stopped —
 because that's the physically true statement: a robot that can't find a
 plan doesn't vanish, it just stays put forever.
 
+One catch: freezing an Engineer at its stand cell is only safe if no
+earlier-planned agent needs that cell after the Engineer's `CLEAR` ends —
+otherwise the permanent placeholder silently overwrites that agent's
+reservation and the simulator reports a real collision (found by a
+random-map stress test; see `test_12`). So when an Engineer's park segment
+fails, `_plan_engineer` first checks `table.window_free(stand, hold_end,
+max_time)`. If the stand is free it stays there (the rubble still counts as
+cleared). If not, the whole mission is rolled back with
+`table.release_agent(...)`: its rubble goes back to `open_time = INF` and the
+robot is frozen at its own start cell, which is always free because it was
+placeholder-reserved until this agent's turn.
+
 **The cost of this fix**: it is deliberately conservative in favor of the
 zero-collision guarantee. It can make an earlier-planned agent fail where a
 less-cautious algorithm might have "gotten lucky" by passing through a
@@ -252,7 +264,8 @@ Three layers, each catching a different class of bug:
    the placeholder bug above — the checker doesn't know or trust the
    planner).
 2. **Scenario tests** (`tests/test_scenarios.py`): the 11 scenarios from
-   §12, each asserting the specific behavior it's designed to demonstrate.
+   §12, each asserting the specific behavior it's designed to demonstrate,
+   plus `test_12`, a regression over generated maps that used to collide.
 3. **The independent simulator** (`simulator.py`) is re-run over *every*
    scenario in *every* mode as a blanket invariant: Cooperative A* and
    RescueSync must report exactly 0 collisions, always — this is checked
@@ -364,6 +377,7 @@ cd frontend && npm install && npm run dev
 9. Two Engineers, two rubble cells in series → Medic waits for the later clear time.
 10. Priority-order change → reordering the same agents changes success/failure (known Cooperative A* / prioritized-planning limitation — see §6).
 11. Large map, 12 robots → 0 collisions.
+12. Regression: an Engineer stuck at its stand (can't reach its park cell) never collides with an earlier-planned agent — 7 generated maps, Cooperative and RescueSync.
 
 Unit tests cover: the Manhattan heuristic, plain A* on known grids, the
 reservation table's vertex/swap rejection, `is_passable` before/after

@@ -179,6 +179,20 @@ def _plan_engineer(
     )
     if path2 is None:
         eng.failed = True
+        if table.window_free(eng.stand, hold_end, max_time, ignore_agent=eng.id):
+            # Stuck at the stand, but nobody planned earlier needs this cell
+            # later on, so the rubble is still cleared and the robot stays put.
+            _freeze_in_place(table, eng, max_time)
+            return
+        # Staying at the stand forever would collide with an earlier-planned
+        # agent's path. Roll the whole mission back: the robot never leaves its
+        # start cell (still free, it was placeholder-reserved until now) and
+        # its rubble is never cleared.
+        table.release_agent(eng.id)
+        open_time[eng.rubble] = INF
+        eng.schedule = [eng.start]
+        eng.wait_count = 0
+        eng.clear_start_time = None
         _freeze_in_place(table, eng, max_time)
         return
     table.reserve_path(path2, eng.id)
