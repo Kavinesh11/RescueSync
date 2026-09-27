@@ -49,10 +49,11 @@ def _list_scenarios() -> list:
 
 
 def _load_scenario(name: str) -> dict:
-    path = SCENARIOS_DIR / f"{name}.json"
-    if not path.exists():
+    # Only names from the scenarios/ listing are allowed, so a name like
+    # "../something" can't read JSON files outside that folder.
+    if name not in _list_scenarios():
         raise HTTPException(404, f"scenario {name!r} not found")
-    return json.loads(path.read_text())
+    return json.loads((SCENARIOS_DIR / f"{name}.json").read_text())
 
 
 @app.get("/api/health")
@@ -96,6 +97,9 @@ def plan(req: PlanRequest) -> dict:
         result = plan_all(scenario, MODE_MAP[req.mode])
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+    except (KeyError, TypeError, IndexError) as exc:
+        # A hand-written scenario with a missing or wrongly-typed field.
+        raise HTTPException(400, f"malformed scenario: {exc!r}") from exc
 
     metrics = compute_metrics(result)
 
