@@ -91,6 +91,10 @@ def space_time_astar(
     closed: set = set()
 
     def goal_ok(cell: Cell, t: int) -> bool:
+        # The CLEAR/RESCUE that follows arrival must also finish inside the
+        # horizon; window_free() clamps to max_time, so check it here.
+        if t + hold_steps > max_time:
+            return False
         if final:
             return table.window_free(cell, t, max_time, ignore_agent=agent_id)
         return table.window_free(cell, t, t + hold_steps, ignore_agent=agent_id)

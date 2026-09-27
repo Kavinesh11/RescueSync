@@ -164,6 +164,11 @@ stop (a temporary stand, then a permanent park) while Medics have one
 - `final`: if true, the goal cell must stay free from arrival all the way to
   `table.max_time` — "nobody else may ever drive through our parked robot."
 
+Either way, `arrival + hold_steps` must be `<= max_time`: a `CLEAR`/`RESCUE`
+that would only finish after the horizon doesn't count (the free-window check
+itself is clamped to `max_time`, so this is checked separately). Independent
+A* applies the same cutoff to its plain-A* paths.
+
 If the window isn't free yet, the state is simply *not* accepted as a goal
 (it's just an ordinary passable node) — the agent can `WAIT` there and
 re-check later, or the search fails at the horizon. A Medic's final call
@@ -379,6 +384,7 @@ cd frontend && npm install && npm run dev
 11. Large map, 12 robots → 0 collisions.
 12. Regression: an Engineer stuck at its stand (can't reach its park cell) never collides with an earlier-planned agent — 7 generated maps, Cooperative and RescueSync.
 13. A Medic that collides on the way is not counted as a rescue (Independent A* on `crossing`: collisions > 0 and rescued < total).
+14. A `RESCUE` that would end after `max_time` is a failure (`blocked_victim`: fails at `max_time=9`, succeeds at 10).
 
 Unit tests cover: the Manhattan heuristic, plain A* on known grids, the
 reservation table's vertex/swap rejection, `is_passable` before/after

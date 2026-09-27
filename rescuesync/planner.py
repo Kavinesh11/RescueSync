@@ -131,7 +131,7 @@ def _plan_engineer(
 ) -> None:
     if not use_reservations:
         path = plain_astar(grid, eng.start, eng.stand, stats)
-        if path is None:
+        if path is None or len(path) - 1 + clear_time > max_time:
             eng.failed = True
             return
         eng.schedule = list(path)
@@ -143,7 +143,7 @@ def _plan_engineer(
             eng.schedule.append(eng.stand)
 
         path2 = plain_astar(grid, eng.stand, eng.park, stats)
-        if path2 is None:
+        if path2 is None or len(eng.schedule) - 1 + len(path2) - 1 > max_time:
             eng.failed = True
             return
         eng.schedule.extend(path2[1:])
@@ -214,7 +214,7 @@ def _plan_medic(
 ) -> None:
     if not use_reservations:
         path = plain_astar(grid, med.start, med.victim, stats)
-        if path is None:
+        if path is None or len(path) - 1 + rescue_time > max_time:
             med.failed = True
             return
         med.schedule = list(path)

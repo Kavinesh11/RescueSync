@@ -155,3 +155,12 @@ def test_13_collided_medic_is_not_rescued(load_scenario):
 
     _, sync = _run(scenario, Mode.RESCUESYNC)
     assert sync["victims_rescued"] == sync["victims_total"]
+
+
+# 14. A RESCUE that would end after max_time is a failure, not a rescue.
+def test_14_rescue_must_finish_within_horizon(load_scenario):
+    scenario = load_scenario("blocked_victim")  # RescueSync finishes the rescue at t = 10
+    for max_time, expected in ((9, 0), (10, 1)):
+        _, m = _run(dict(scenario, max_time=max_time), Mode.RESCUESYNC)
+        assert m["victims_rescued"] == expected
+        assert m["makespan"] <= max_time
