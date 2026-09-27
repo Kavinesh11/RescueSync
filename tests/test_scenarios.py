@@ -1,5 +1,8 @@
-"""The 11 scenario tests from CLAUDE.md section 12 (Testing)."""
+"""The 11 scenario tests from CLAUDE.md section 12 (Testing), plus regressions."""
+import pytest
+
 from rescuesync.astar import manhattan
+from rescuesync.experiments import random_scenario
 from rescuesync.metrics import compute_metrics
 from rescuesync.planner import Mode, plan_all
 
@@ -130,3 +133,14 @@ def test_11_large_map_zero_collisions(load_scenario):
     assert len(scenario["agents"]) >= 10
     _, m = _run(scenario, Mode.RESCUESYNC)
     assert m["collisions"] == 0
+
+
+# 12. Regression: an Engineer that clears its rubble but can't reach its park
+# cell used to be frozen at its stand on top of an earlier-planned agent's
+# path. These generated maps all collided in Cooperative mode before the fix.
+@pytest.mark.parametrize("seed, n", [(100, 6), (100, 8), (170, 8), (229, 8), (307, 8), (342, 8), (348, 8)])
+def test_12_stuck_engineer_never_collides(seed, n):
+    scenario = random_scenario(seed=seed, size=15, num_engineers=n, num_medics=n)
+    for mode in (Mode.COOPERATIVE, Mode.RESCUESYNC):
+        _, m = _run(scenario, mode)
+        assert m["collisions"] == 0
