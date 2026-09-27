@@ -1,6 +1,9 @@
-"""Unit tests: heuristic, plain A*, reservation table, is_passable, collision checker."""
+"""Unit tests: heuristic, plain A*, reservation table, is_passable, collision checker, scenario validation."""
+import pytest
+
 from rescuesync.astar import manhattan, plain_astar, space_time_astar
 from rescuesync.environment import Grid
+from rescuesync.planner import Mode, plan_all
 from rescuesync.reservation import ReservationTable
 from rescuesync.simulator import simulate
 
@@ -142,3 +145,36 @@ def test_collision_checker_clean_paths_have_no_collisions():
     }
     sim = simulate(result)
     assert sim["collisions"] == []
+
+
+def _scenario_with(**changes):
+    """blocked_victim, with fields of E1 / M1 overridden (or extra agents added)."""
+    agents = [
+        {"id": "E1", "role": "engineer", "start": [1, 2], "rubble": [2, 3], "stand": [1, 3], "park": [1, 5]},
+        {"id": "M1", "role": "medic", "start": [1, 1], "victim": [3, 5]},
+    ]
+    agents[0].update(changes.pop("E1", {}))
+    agents[1].update(changes.pop("M1", {}))
+    agents += changes.pop("extra", [])
+    return {
+        "grid": ["#######", "#.....#", "###R###", "#....V#", "#######"],
+        "clear_time": 2, "rescue_time": 2, "max_time": 30, "agents": agents,
+    }
+
+
+@pytest.mark.parametrize("changes, message", [
+    ({"extra": [{"id": "M1", "role": "medic", "start": [1, 4], "victim": [3, 4]}]}, "duplicate agent id"),
+    ({"extra": [{"id": "M2", "role": "medic", "start": [1, 1], "victim": [3, 4]}]}, "both start at"),
+    ({"E1": {"rubble": [1, 4]}}, "is not a rubble"),
+    ({"E1": {"stand": [1, 4]}}, "is not next to its rubble"),
+    ({"extra": [{"id": "E2", "role": "engineer", "start": [1, 4], "rubble": [2, 3], "stand": [3, 3], "park": [3, 1]}]},
+     "both assigned rubble"),
+    ({"M1": {"victim": [0, 0]}}, "is a wall"),
+])
+def test_plan_all_rejects_invalid_scenarios(changes, message):
+    with pytest.raises(ValueError, match=message):
+        plan_all(_scenario_with(**changes), Mode.RESCUESYNC)
+
+
+def test_plan_all_accepts_valid_scenario():
+    plan_all(_scenario_with(), Mode.RESCUESYNC)

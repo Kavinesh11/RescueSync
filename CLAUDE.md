@@ -102,6 +102,16 @@ Modelling assumptions (verbatim, also stated in the Review 1 slides):
    `RESCUE` (2 steps).
 5. Every robot's start cell is reserved at `t=0`.
 
+Scenario validation (`planner._validate_agents`, raised as `ValueError` — the
+backend turns it into an HTTP 400): agent ids must be unique; no two robots
+may share a start cell; every start/stand/park/victim must be in bounds and
+not a wall; an Engineer's `rubble` must be an `R` cell, its `stand` must be
+4-adjacent to that rubble, stand/park must not be rubble, and no two
+Engineers may be assigned the same rubble. Without these checks, such
+mistakes silently produced wrong metrics (e.g. a duplicate id made one robot
+vanish from the victim count, and a far-away stand "cleared" rubble from
+across the map).
+
 ## 4. PEAS and environment properties (Review 1)
 
 | | Engineer | Medic |
@@ -388,7 +398,8 @@ cd frontend && npm install && npm run dev
 
 Unit tests cover: the Manhattan heuristic, plain A* on known grids, the
 reservation table's vertex/swap rejection, `is_passable` before/after
-`open_time`, and the collision checker against hand-built schedules.
+`open_time`, the collision checker against hand-built schedules, and
+scenario validation (each rejected mistake from §3).
 
 ## 13. Known limitations (state these before anyone asks)
 

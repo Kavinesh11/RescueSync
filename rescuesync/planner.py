@@ -47,13 +47,7 @@ def plan_all(scenario: dict, mode: Mode) -> PlanResult:
     max_time = scenario.get("max_time", 100)
 
     agents = [agent_from_dict(a) for a in scenario["agents"]]
-    for a in agents:
-        grid.validate_cell(a.start, f"{a.id}.start")
-        if isinstance(a, EngineerAgent):
-            grid.validate_cell(a.stand, f"{a.id}.stand")
-            grid.validate_cell(a.park, f"{a.id}.park")
-        if isinstance(a, MedicAgent):
-            grid.validate_cell(a.victim, f"{a.id}.victim")
+    _validate_agents(grid, agents)
 
     engineers = [a for a in agents if isinstance(a, EngineerAgent)]
     medics = [a for a in agents if isinstance(a, MedicAgent)]
@@ -89,6 +83,38 @@ def plan_all(scenario: dict, mode: Mode) -> PlanResult:
     result.open_time = open_time
     result.planning_time_ms = (time.perf_counter() - t0) * 1000
     return result
+
+
+def _validate_agents(grid: Grid, agents: list) -> None:
+    """Reject scenario mistakes that would otherwise fail silently or
+    produce misleading metrics. Raises ValueError with a readable message."""
+    seen_ids: Dict[str, Cell] = {}
+    seen_starts: Dict[Cell, str] = {}
+    rubble_owner: Dict[Cell, str] = {}
+    for a in agents:
+        if a.id in seen_ids:
+            raise ValueError(f"duplicate agent id {a.id!r}")
+        seen_ids[a.id] = a.start
+
+        grid.validate_cell(a.start, f"{a.id}.start")
+        if a.start in seen_starts:
+            raise ValueError(f"{a.id} and {seen_starts[a.start]} both start at {a.start}")
+        seen_starts[a.start] = a.id
+
+        if isinstance(a, EngineerAgent):
+            grid.validate_cell(a.stand, f"{a.id}.stand")
+            grid.validate_cell(a.park, f"{a.id}.park")
+            if not grid.is_rubble(a.rubble):
+                raise ValueError(f"{a.id}.rubble {a.rubble} is not a rubble ('R') cell")
+            if abs(a.stand[0] - a.rubble[0]) + abs(a.stand[1] - a.rubble[1]) != 1:
+                raise ValueError(f"{a.id}.stand {a.stand} is not next to its rubble {a.rubble}")
+            if grid.is_rubble(a.stand) or grid.is_rubble(a.park):
+                raise ValueError(f"{a.id}.stand and {a.id}.park must not be rubble cells")
+            if a.rubble in rubble_owner:
+                raise ValueError(f"{a.id} and {rubble_owner[a.rubble]} are both assigned rubble {a.rubble}")
+            rubble_owner[a.rubble] = a.id
+        if isinstance(a, MedicAgent):
+            grid.validate_cell(a.victim, f"{a.id}.victim")
 
 
 def _apply_path(agent: BaseAgent, path_with_time) -> None:
