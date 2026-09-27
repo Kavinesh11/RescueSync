@@ -144,3 +144,14 @@ def test_12_stuck_engineer_never_collides(seed, n):
     for mode in (Mode.COOPERATIVE, Mode.RESCUESYNC):
         _, m = _run(scenario, mode)
         assert m["collisions"] == 0
+
+
+# 13. A Medic that collides on the way doesn't count as a rescue (Mode 1 on crossing).
+def test_13_collided_medic_is_not_rescued(load_scenario):
+    scenario = load_scenario("crossing")
+    _, indep = _run(scenario, Mode.INDEPENDENT)
+    assert indep["collisions"] > 0
+    assert indep["victims_rescued"] < indep["victims_total"]
+
+    _, sync = _run(scenario, Mode.RESCUESYNC)
+    assert sync["victims_rescued"] == sync["victims_total"]

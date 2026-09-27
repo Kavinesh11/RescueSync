@@ -11,8 +11,16 @@ def compute_metrics(plan_result) -> Dict:
     sim = simulate(plan_result)
     agents = plan_result.agents
 
+    # A Medic that crashed into another robot on the way didn't really
+    # rescue anyone, even if its (independently planned) path reached the
+    # victim. Only Independent A* can produce such plans.
+    collided = {aid for c in sim["collisions"] for aid in c["agents"]}
+
     total_victims = sum(1 for a in agents.values() if isinstance(a, MedicAgent))
-    rescued = sum(1 for a in agents.values() if isinstance(a, MedicAgent) and not a.failed)
+    rescued = sum(
+        1 for a in agents.values()
+        if isinstance(a, MedicAgent) and not a.failed and a.id not in collided
+    )
 
     finish_times = [a.finish_time for a in agents.values() if a.finish_time is not None]
     makespan = max(finish_times) if finish_times else 0

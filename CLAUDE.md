@@ -355,7 +355,7 @@ cd frontend && npm install && npm run dev
 | Metric | Definition |
 |---|---|
 | `collisions` | vertex + swap conflicts found by the independent simulator |
-| `victims_rescued` / `success_rate` | rescued Medics ÷ total Medics |
+| `victims_rescued` / `success_rate` | rescued Medics ÷ total Medics — a Medic counts as rescued only if it reached its victim *and* was never in a collision (only possible in Independent A*) |
 | `makespan` | finish time of the last agent |
 | `sum_of_costs` | sum of every agent's finish time |
 | `wait_actions` | total `WAIT` steps across all agents (search-time waits only, see §7) |
@@ -378,6 +378,7 @@ cd frontend && npm install && npm run dev
 10. Priority-order change → reordering the same agents changes success/failure (known Cooperative A* / prioritized-planning limitation — see §6).
 11. Large map, 12 robots → 0 collisions.
 12. Regression: an Engineer stuck at its stand (can't reach its park cell) never collides with an earlier-planned agent — 7 generated maps, Cooperative and RescueSync.
+13. A Medic that collides on the way is not counted as a rescue (Independent A* on `crossing`: collisions > 0 and rescued < total).
 
 Unit tests cover: the Manhattan heuristic, plain A* on known grids, the
 reservation table's vertex/swap rejection, `is_passable` before/after
