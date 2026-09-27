@@ -62,6 +62,8 @@ def run_visualizer(scenario: dict, initial_mode) -> None:
                     playing = not playing
                 elif event.key == pygame.K_RIGHT:
                     t = min(t + 1, max_t)
+                elif event.key == pygame.K_LEFT:
+                    t = max(t - 1, 0)
                 elif event.key == pygame.K_r:
                     t = 0
                     playing = False
