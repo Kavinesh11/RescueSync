@@ -45,7 +45,7 @@ RescueSync/
 ├── CLAUDE.md              # this file
 ├── README.md              # setup + quickstart for humans
 ├── main.py                # CLI: plan a scenario headlessly, or --gui for Pygame
-├── requirements.txt        # pygame, matplotlib, pytest, fastapi, uvicorn
+├── requirements.txt        # pygame-ce, matplotlib, pytest, fastapi, uvicorn
 ├── pytest.ini
 ├── rescuesync/             # the graded core engine (pure Python, no UI deps except visualizer.py)
 │   ├── environment.py       # Grid: walls/rubble/victims, is_passable()
@@ -303,7 +303,7 @@ robot" would require tagging each wait with a cause during search.
 | `json` (stdlib) | scenario files | human-readable, no extra dependency |
 | `pytest` | automated tests | simple syntax, one command runs everything |
 | `matplotlib` | Review-2 experiment graphs | standard, saves PNGs for the report |
-| `Pygame` | secondary desktop demo (`main.py --gui`) | kept for parity with the original tool-selection writeup; the **primary, polished demo is the web UI** below |
+| `Pygame` (`pygame-ce`) | secondary desktop demo (`main.py --gui`) | kept for parity with the original tool-selection writeup; uses the community edition because upstream pygame 2.6 breaks on Python 3.14 (`pygame.font` fails to import) — same `import pygame` API; the **primary, polished demo is the web UI** below |
 | `FastAPI` + `uvicorn` | thin backend | exposes `plan_all()`/`compute_metrics()` as JSON over HTTP so the web UI can drive it; no planning logic lives here, it only serializes `rescuesync/` |
 | React + Vite + TypeScript + Tailwind + shadcn/ui | web UI | a stylish, interactive replacement/upgrade for the Pygame demo — same controls (play/pause/step/restart/mode-switch), grid + agents + collision highlighting + live metrics, in a browser |
 
