@@ -24,6 +24,8 @@ export function PlaybackControls({
   onSpeedChange,
   onRestart,
 }: PlaybackControlsProps) {
+  const noTimeline = maxT === 0
+
   function handlePlayClick() {
     // Replaying after the timeline finished should restart from the top,
     // not just flip `playing` true for one tick and immediately snap back.
@@ -36,7 +38,7 @@ export function PlaybackControls({
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-secondary/30 p-3">
       <div className="flex items-center gap-2">
-        <Button size="icon" variant="outline" onClick={onRestart} title="Restart">
+        <Button size="icon" variant="outline" onClick={onRestart} disabled={noTimeline} title="Restart">
           <RotateCcw />
         </Button>
         <Button
@@ -48,7 +50,7 @@ export function PlaybackControls({
         >
           <ChevronLeft />
         </Button>
-        <Button size="icon" onClick={handlePlayClick} title={playing ? 'Pause' : 'Play'}>
+        <Button size="icon" onClick={handlePlayClick} disabled={noTimeline} title={playing ? 'Pause' : 'Play'}>
           {playing ? <Pause /> : <Play />}
         </Button>
         <Button
@@ -64,6 +66,11 @@ export function PlaybackControls({
           t={String(t).padStart(2, '0')}
           <span className="text-muted-foreground">/{String(maxT).padStart(2, '0')}</span>
         </div>
+        {noTimeline && (
+          <span className="text-[10px] uppercase tracking-wider text-destructive">
+            No movement possible — see Mission Log
+          </span>
+        )}
         <div className="ml-auto flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
           Speed
           <Slider
