@@ -27,7 +27,7 @@ def main() -> None:
     parser.add_argument("--gui", action="store_true", help="launch the Pygame visualizer")
     args = parser.parse_args()
 
-    scenario = json.loads(Path(args.scenario).read_text())
+    scenario = json.loads(Path(args.scenario).read_text(encoding="utf-8"))
     mode = MODE_MAP[args.mode]
     result = plan_all(scenario, mode)
     metrics = compute_metrics(result)
