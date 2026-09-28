@@ -53,7 +53,7 @@ def _load_scenario(name: str) -> dict:
     # "../something" can't read JSON files outside that folder.
     if name not in _list_scenarios():
         raise HTTPException(404, f"scenario {name!r} not found")
-    return json.loads((SCENARIOS_DIR / f"{name}.json").read_text())
+    return json.loads((SCENARIOS_DIR / f"{name}.json").read_text(encoding="utf-8"))
 
 
 @app.get("/api/health")
