@@ -129,7 +129,7 @@ def run_experiments(output_dir: str = "experiments/output") -> List[dict]:
                 metrics = compute_metrics(result)
                 rows.append({"robots": n, "mode": mode.value, **metrics})
 
-    (out / "raw_results.json").write_text(json.dumps(rows, indent=2))
+    (out / "raw_results.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
     _plot(rows, str(out))
     return rows
 
