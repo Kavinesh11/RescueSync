@@ -24,6 +24,15 @@ export function PlaybackControls({
   onSpeedChange,
   onRestart,
 }: PlaybackControlsProps) {
+  function handlePlayClick() {
+    // Replaying after the timeline finished should restart from the top,
+    // not just flip `playing` true for one tick and immediately snap back.
+    if (!playing && t >= maxT) {
+      onTChange(0)
+    }
+    onPlayingChange(!playing)
+  }
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-secondary/30 p-3">
       <div className="flex items-center gap-2">
@@ -39,7 +48,7 @@ export function PlaybackControls({
         >
           <ChevronLeft />
         </Button>
-        <Button size="icon" onClick={() => onPlayingChange(!playing)} title={playing ? 'Pause' : 'Play'}>
+        <Button size="icon" onClick={handlePlayClick} title={playing ? 'Pause' : 'Play'}>
           {playing ? <Pause /> : <Play />}
         </Button>
         <Button
