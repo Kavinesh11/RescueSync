@@ -106,7 +106,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.07),transparent_55%)] bg-background pb-16">
-      <header className="scanline border-b border-hud-dim bg-card/60 backdrop-blur-sm">
+      <header className="border-b border-hud-dim bg-card/60 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="hud-frame flex h-10 w-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
