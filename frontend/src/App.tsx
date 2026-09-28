@@ -5,6 +5,7 @@ import { AgentList } from '@/components/AgentList'
 import { GridCanvas } from '@/components/GridCanvas'
 import { Legend } from '@/components/Legend'
 import { MetricsPanel } from '@/components/MetricsPanel'
+import { MissionLog } from '@/components/MissionLog'
 import { ModeSwitch } from '@/components/ModeSwitch'
 import { PlaybackControls } from '@/components/PlaybackControls'
 import { ScenarioSelect } from '@/components/ScenarioSelect'
@@ -104,16 +105,20 @@ export default function App() {
   const currentScenario = scenarios.find((s) => s.name === scenarioName)
 
   return (
-    <div className="min-h-screen bg-background pb-16">
-      <header className="border-b border-border/60 bg-card/40">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-5">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.07),transparent_55%)] bg-background pb-16">
+      <header className="scanline border-b border-hud-dim bg-card/60 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
-              <Radar className="h-5 w-5" />
+            <div className="hud-frame flex h-10 w-10 shrink-0 items-center justify-center bg-primary/10 text-primary">
+              <Radar className="h-5 w-5 animate-[spin_6s_linear_infinite]" />
+              <span className="hud-corner-tr" />
+              <span className="hud-corner-bl" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold leading-tight">RescueSync</h1>
-              <p className="text-xs text-muted-foreground">Cooperative multi-agent rescue planner</p>
+              <h1 className="text-lg font-semibold leading-tight tracking-tight">RescueSync</h1>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                Cooperative Multi-Agent Rescue Planner
+              </p>
             </div>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-3">
@@ -128,7 +133,8 @@ export default function App() {
           <Card>
             <CardHeader className="flex-row items-center justify-between gap-2">
               <div>
-                <CardTitle>{scenarioName ? scenarioName.replaceAll('_', ' ') : 'Loading…'}</CardTitle>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-hud">Scenario</div>
+                <CardTitle className="mt-0.5">{scenarioName ? scenarioName.replaceAll('_', ' ') : 'Loading…'}</CardTitle>
                 <CardDescription>{currentScenario?.description}</CardDescription>
               </div>
               {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -142,7 +148,7 @@ export default function App() {
               )}
               {plan && (
                 <>
-                  <div className="overflow-auto rounded-lg">
+                  <div className="overflow-auto rounded-md border border-border/40 bg-[radial-gradient(circle_at_center,hsl(var(--secondary)/0.4),transparent_70%)] p-4">
                     <GridCanvas
                       grid={plan.grid}
                       agents={plan.agents}
@@ -163,6 +169,16 @@ export default function App() {
                   />
                   <Separator />
                   <Legend />
+                  <Separator />
+                  <div>
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-hud">Mission Log</div>
+                    <MissionLog
+                      agents={plan.agents}
+                      openTime={plan.open_time}
+                      collisions={plan.metrics.collision_details}
+                      t={t}
+                    />
+                  </div>
                 </>
               )}
             </CardContent>
@@ -173,13 +189,17 @@ export default function App() {
           {plan && <MetricsPanel metrics={plan.metrics} />}
           <Card>
             <CardHeader>
-              <CardTitle>Agents</CardTitle>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-hud">Roster</div>
+              <CardTitle className="mt-0.5">Agents</CardTitle>
             </CardHeader>
             <CardContent>{plan && <AgentList agents={plan.agents} t={t} />}</CardContent>
           </Card>
-          <p className="px-1 text-[11px] leading-relaxed text-muted-foreground">
-            {'Space: play/pause · ←/→: step · 1/2/3: switch mode · R: restart'}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border/60 px-1">Space</kbd> play/pause</span>
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border/60 px-1">←/→</kbd> step</span>
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border/60 px-1">1/2/3</kbd> mode</span>
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border/60 px-1">R</kbd> restart</span>
+          </div>
         </div>
       </main>
     </div>
