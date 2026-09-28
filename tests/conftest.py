@@ -13,6 +13,6 @@ SCENARIOS_DIR = ROOT / "scenarios"
 @pytest.fixture
 def load_scenario():
     def _load(name: str) -> dict:
-        return json.loads((SCENARIOS_DIR / f"{name}.json").read_text())
+        return json.loads((SCENARIOS_DIR / f"{name}.json").read_text(encoding="utf-8"))
 
     return _load
