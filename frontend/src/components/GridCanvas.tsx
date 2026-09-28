@@ -114,7 +114,7 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
               <div
                 key={agent.id}
                 className={cn(
-                  'absolute flex items-center justify-center rounded-full font-mono text-[10px] font-semibold text-white shadow-lg ring-2 ring-black/20 transition-all duration-300 ease-out',
+                  'absolute z-20 flex items-center justify-center rounded-full font-mono text-[10px] font-semibold text-white shadow-lg ring-2 ring-black/20 transition-all duration-300 ease-out',
                   collided && 'animate-pulse ring-4 ring-destructive',
                   agent.failed && 'opacity-40 grayscale ring-dashed',
                 )}
