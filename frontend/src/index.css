@@ -4,46 +4,53 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: 220 24% 8%;
-  --foreground: 210 20% 92%;
+  --background: 220 28% 5%;
+  --foreground: 38 22% 92%;
 
-  --card: 220 22% 11%;
-  --card-foreground: 210 20% 92%;
+  --card: 220 26% 8%;
+  --card-foreground: 38 22% 92%;
 
-  --popover: 220 22% 11%;
-  --popover-foreground: 210 20% 92%;
+  --popover: 220 26% 8%;
+  --popover-foreground: 38 22% 92%;
 
-  --primary: 27 96% 55%;
-  --primary-foreground: 20 40% 8%;
+  --primary: 32 96% 54%;
+  --primary-foreground: 20 45% 8%;
 
-  --secondary: 220 18% 18%;
-  --secondary-foreground: 210 20% 92%;
+  --secondary: 220 20% 14%;
+  --secondary-foreground: 38 22% 92%;
 
-  --muted: 220 18% 16%;
-  --muted-foreground: 215 14% 62%;
+  --muted: 220 20% 12%;
+  --muted-foreground: 210 14% 58%;
 
-  --accent: 199 89% 55%;
+  --accent: 189 85% 52%;
   --accent-foreground: 210 20% 96%;
 
-  --destructive: 0 74% 56%;
+  --destructive: 4 82% 56%;
   --destructive-foreground: 210 20% 96%;
 
-  --success: 158 64% 42%;
+  --success: 152 55% 44%;
   --success-foreground: 210 20% 96%;
 
-  --border: 220 16% 20%;
-  --input: 220 16% 20%;
-  --ring: 27 96% 55%;
+  --border: 220 18% 16%;
+  --input: 220 18% 16%;
+  --ring: 32 96% 54%;
 
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
-  --engineer: 27 96% 55%;
-  --medic: 199 89% 55%;
-  --rubble: 25 45% 38%;
-  --rubble-cleared: 30 35% 66%;
-  --victim: 350 78% 56%;
-  --wall: 220 14% 22%;
-  --floor: 220 20% 13%;
+  --engineer: 32 96% 54%;
+  --medic: 189 85% 55%;
+  --rubble: 25 42% 30%;
+  --rubble-cleared: 32 45% 62%;
+  --victim: 355 80% 58%;
+  --wall: 220 16% 14%;
+  --floor: 220 24% 9%;
+
+  /* console/HUD accents — hairline frames, rulers, scan effects */
+  --hud: 32 55% 42%;
+  --hud-dim: 220 16% 22%;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-technical: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @theme inline {
@@ -79,6 +86,12 @@
   --color-victim: hsl(var(--victim));
   --color-wall: hsl(var(--wall));
   --color-floor: hsl(var(--floor));
+
+  --color-hud: hsl(var(--hud));
+  --color-hud-dim: hsl(var(--hud-dim));
+
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-technical);
 }
 
 @layer base {
@@ -87,7 +100,56 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-display);
     font-feature-settings: "cv11", "ss01";
     font-variation-settings: normal;
+    background-image:
+      linear-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+}
+
+@layer utilities {
+  /* Corner-bracket "viewfinder" frame — used to give the primary
+     grid panel a console/HUD identity instead of a generic rounded card. */
+  .hud-frame {
+    position: relative;
+  }
+  .hud-frame::before,
+  .hud-frame::after,
+  .hud-frame > .hud-corner-tr,
+  .hud-frame > .hud-corner-bl {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 0 solid hsl(var(--hud));
+    pointer-events: none;
+  }
+  .hud-frame::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+  }
+  .hud-frame::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+  }
+  .hud-corner-tr {
+    top: -1px;
+    right: -1px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+  }
+  .hud-corner-bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
   }
 }
