@@ -10,10 +10,10 @@ const ITEMS = [
 
 export function Legend() {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+    <div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] uppercase tracking-wider text-muted-foreground">
       {ITEMS.map((item) => (
         <div key={item.label} className="flex items-center gap-1.5">
-          <span className={`h-3 w-3 ${item.shape} ${item.swatch}`} />
+          <span className={`h-2.5 w-2.5 ${item.shape} ${item.swatch}`} />
           {item.label}
         </div>
       ))}
