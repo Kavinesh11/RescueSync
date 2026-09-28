@@ -1,33 +1,32 @@
-import { AlertTriangle, CheckCircle2, Clock, Cpu, HeartPulse, Timer } from 'lucide-react'
+import { AlertTriangle, Clock, Cpu, GitBranch, HeartPulse, Timer } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { Metrics } from '@/lib/types'
 
-interface StatProps {
+interface ReadoutProps {
   icon: ReactNode
   label: string
   value: ReactNode
   tone?: 'default' | 'success' | 'destructive'
 }
 
-function Stat({ icon, label, value, tone = 'default' }: StatProps) {
+function Readout({ icon, label, value, tone = 'default' }: ReadoutProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-secondary/40 p-3">
+    <div className="flex flex-col gap-1 border-b border-r border-border/60 px-3 py-2.5 [&:nth-child(2n)]:border-r-0 [&:nth-last-child(-n+2)]:border-b-0">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <span className="text-muted-foreground/60">{icon}</span>
+        {label}
+      </div>
       <div
         className={cn(
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-md',
-          tone === 'success' && 'bg-success/15 text-success',
-          tone === 'destructive' && 'bg-destructive/15 text-destructive',
-          tone === 'default' && 'bg-primary/15 text-primary',
+          'truncate font-mono text-base font-semibold tabular-nums',
+          tone === 'success' && 'text-success',
+          tone === 'destructive' && 'text-destructive',
         )}
       >
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-        <div className="truncate text-sm font-semibold">{value}</div>
+        {value}
       </div>
     </div>
   )
@@ -36,33 +35,37 @@ function Stat({ icon, label, value, tone = 'default' }: StatProps) {
 export function MetricsPanel({ metrics }: { metrics: Metrics }) {
   const allRescued = metrics.victims_rescued === metrics.victims_total
   return (
-    <Card>
-      <CardContent className="grid grid-cols-2 gap-2 p-3">
-        <Stat
-          icon={<HeartPulse className="h-4 w-4" />}
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border/60 bg-secondary/30 px-3 py-1.5">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Telemetry</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-hud">{metrics.mode}</span>
+      </div>
+      <div className="grid grid-cols-2">
+        <Readout
+          icon={<HeartPulse className="h-3.5 w-3.5" />}
           label="Rescued"
           value={`${metrics.victims_rescued} / ${metrics.victims_total}`}
           tone={allRescued ? 'success' : 'default'}
         />
-        <Stat
-          icon={<AlertTriangle className="h-4 w-4" />}
+        <Readout
+          icon={<AlertTriangle className="h-3.5 w-3.5" />}
           label="Collisions"
           value={metrics.collisions}
           tone={metrics.collisions === 0 ? 'success' : 'destructive'}
         />
-        <Stat icon={<Clock className="h-4 w-4" />} label="Makespan" value={metrics.makespan} />
-        <Stat icon={<Timer className="h-4 w-4" />} label="Wait actions" value={metrics.wait_actions} />
-        <Stat
-          icon={<Cpu className="h-4 w-4" />}
+        <Readout icon={<Clock className="h-3.5 w-3.5" />} label="Makespan" value={metrics.makespan} />
+        <Readout icon={<Timer className="h-3.5 w-3.5" />} label="Wait actions" value={metrics.wait_actions} />
+        <Readout
+          icon={<Cpu className="h-3.5 w-3.5" />}
           label="Planning time"
           value={`${metrics.planning_time_ms} ms`}
         />
-        <Stat
-          icon={<CheckCircle2 className="h-4 w-4" />}
+        <Readout
+          icon={<GitBranch className="h-3.5 w-3.5" />}
           label="Nodes expanded"
           value={metrics.nodes_expanded.toLocaleString()}
         />
-      </CardContent>
+      </div>
     </Card>
   )
 }
