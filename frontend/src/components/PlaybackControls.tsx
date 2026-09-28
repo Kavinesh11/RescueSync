@@ -51,10 +51,11 @@ export function PlaybackControls({
         >
           <ChevronRight />
         </Button>
-        <div className="ml-2 font-mono text-sm text-muted-foreground">
-          t = {t} / {maxT}
+        <div className="ml-2 rounded border border-border/60 bg-background/60 px-2 py-1 font-mono text-sm tabular-nums text-hud">
+          t={String(t).padStart(2, '0')}
+          <span className="text-muted-foreground">/{String(maxT).padStart(2, '0')}</span>
         </div>
-        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="ml-auto flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
           Speed
           <Slider
             className="w-24"
