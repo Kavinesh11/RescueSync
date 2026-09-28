@@ -189,8 +189,7 @@ export default function App() {
           {plan && <MetricsPanel metrics={plan.metrics} />}
           <Card>
             <CardHeader>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-hud">Roster</div>
-              <CardTitle className="mt-0.5">Agents</CardTitle>
+              <CardTitle>Agents</CardTitle>
             </CardHeader>
             <CardContent>{plan && <AgentList agents={plan.agents} t={t} />}</CardContent>
           </Card>
