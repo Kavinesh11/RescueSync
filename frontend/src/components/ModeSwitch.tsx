@@ -12,7 +12,7 @@ export function ModeSwitch({ mode, onChange }: { mode: Mode; onChange: (m: Mode)
     <Tabs value={mode} onValueChange={(v) => onChange(v as Mode)}>
       <TabsList>
         {MODES.map((m) => (
-          <TabsTrigger key={m.value} value={m.value}>
+          <TabsTrigger key={m.value} value={m.value} className="font-mono text-[11px] tracking-wide">
             {m.label}
           </TabsTrigger>
         ))}
