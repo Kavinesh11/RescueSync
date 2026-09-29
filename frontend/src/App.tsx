@@ -147,7 +147,7 @@ export default function App() {
                 </div>
               )}
               {plan && (
-                <>
+                <div key={`${scenarioName}-${mode}`} className="flex flex-col gap-4 animate-[content-fade-in_250ms_ease-out]">
                   <div className="overflow-auto rounded-md border border-border/40 bg-[radial-gradient(circle_at_center,hsl(var(--secondary)/0.4),transparent_70%)] p-4">
                     <GridCanvas
                       grid={plan.grid}
@@ -179,7 +179,7 @@ export default function App() {
                       t={t}
                     />
                   </div>
-                </>
+                </div>
               )}
             </CardContent>
           </Card>
