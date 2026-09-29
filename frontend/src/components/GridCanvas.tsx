@@ -3,9 +3,6 @@ import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import type { AgentState, Cell, Collision } from '@/lib/types'
 
-const CELL_SIZE = 38
-const RULER = 18
-
 interface GridCanvasProps {
   grid: string[]
   agents: Record<string, AgentState>
@@ -22,6 +19,16 @@ function posAt(schedule: Cell[], t: number): Cell {
 export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCanvasProps) {
   const height = grid.length
   const width = grid[0]?.length ?? 0
+
+  // Scale cells to the scenario's own footprint instead of a fixed size, so
+  // small scenarios (most of them) fill the card instead of leaving dead
+  // space, while large_map (15x15) stays close to its previous, already-
+  // tuned density.
+  const CELL_SIZE = Math.min(56, Math.max(30, Math.floor(480 / Math.max(width, height))))
+  const RULER = Math.round(Math.min(24, Math.max(16, CELL_SIZE * 0.32)))
+  const rulerFontSize = Math.round(Math.min(12, Math.max(8, CELL_SIZE * 0.22)))
+  const agentFontSize = Math.round(Math.min(15, Math.max(9, CELL_SIZE * 0.22)))
+  const victimSize = Math.round(Math.min(16, Math.max(8, CELL_SIZE * 0.2)))
 
   const collidedAgents = useMemo(() => {
     const s = new Set<string>()
@@ -50,8 +57,8 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
         {Array.from({ length: width }, (_, c) => (
           <div
             key={`col-${c}`}
-            className="absolute flex items-center justify-center font-mono text-[9px] text-hud/70"
-            style={{ left: RULER + c * CELL_SIZE, top: 0, width: CELL_SIZE, height: RULER }}
+            className="absolute flex items-center justify-center font-mono text-hud/70"
+            style={{ left: RULER + c * CELL_SIZE, top: 0, width: CELL_SIZE, height: RULER, fontSize: rulerFontSize }}
           >
             {c}
           </div>
@@ -60,8 +67,8 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
         {Array.from({ length: height }, (_, r) => (
           <div
             key={`row-${r}`}
-            className="absolute flex items-center justify-center font-mono text-[9px] text-hud/70"
-            style={{ left: 0, top: RULER + r * CELL_SIZE, width: RULER, height: CELL_SIZE }}
+            className="absolute flex items-center justify-center font-mono text-hud/70"
+            style={{ left: 0, top: RULER + r * CELL_SIZE, width: RULER, height: CELL_SIZE, fontSize: rulerFontSize }}
           >
             {r}
           </div>
@@ -77,6 +84,7 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
               const key = `${r},${c}`
               const rubbleOpenAt = openTime[key]
               const isOpen = ch === 'R' && rubbleOpenAt !== null && rubbleOpenAt !== undefined && t >= rubbleOpenAt
+              const justOpened = isOpen && t === rubbleOpenAt
               const isCollidedCell = collidedCells.has(key)
               return (
                 <div
@@ -89,14 +97,18 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
                     ch === 'R' && !isOpen && 'bg-rubble',
                     ch === 'R' && isOpen && 'bg-rubble-cleared',
                     isCollidedCell && 'z-10 ring-2 ring-destructive ring-inset',
+                    justOpened && 'animate-[pop-glow_450ms_ease-out]',
                   )}
                   style={{ left: c * CELL_SIZE, top: r * CELL_SIZE, width: CELL_SIZE, height: CELL_SIZE }}
                   title={ch === 'R' ? (isOpen ? 'Rubble (cleared)' : 'Rubble (blocked)') : undefined}
                 >
                   {ch === 'V' && (
-                    <span className="relative flex h-2.5 w-2.5">
+                    <span className="relative flex" style={{ width: victimSize, height: victimSize }}>
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-victim/60" />
-                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-victim shadow-[0_0_6px_hsl(var(--victim))]" />
+                      <span
+                        className="relative inline-flex rounded-full bg-victim shadow-[0_0_6px_hsl(var(--victim))]"
+                        style={{ width: victimSize, height: victimSize }}
+                      />
                     </span>
                   )}
                 </div>
@@ -110,12 +122,15 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
             const [r, c] = posAt(agent.schedule, t)
             const collided = collidedAgents.has(agent.id)
             const isEngineer = agent.role === 'engineer'
+            const justFinished = !isEngineer && !agent.failed && agent.finish_time != null && t === agent.finish_time
             return (
               <div
                 key={agent.id}
                 className={cn(
-                  'absolute z-20 flex items-center justify-center rounded-full font-mono text-[10px] font-semibold text-white shadow-lg ring-2 ring-black/20 transition-all duration-300 ease-out',
+                  'absolute z-20 flex items-center justify-center rounded-full font-mono font-semibold text-white shadow-lg ring-2 ring-black/20 transition-all duration-300 ease-out',
                   collided && 'animate-pulse ring-4 ring-destructive',
+                  !collided && !justFinished && t === 0 && 'animate-[fade-scale-in_300ms_ease-out_backwards]',
+                  !collided && justFinished && 'animate-[success-pulse_500ms_ease-out]',
                   agent.failed && 'opacity-40 grayscale ring-dashed',
                 )}
                 style={{
@@ -123,6 +138,7 @@ export function GridCanvas({ grid, agents, t, openTime, collisionsAtT }: GridCan
                   top: r * CELL_SIZE + 4,
                   width: CELL_SIZE - 8,
                   height: CELL_SIZE - 8,
+                  fontSize: agentFontSize,
                   backgroundColor: collided
                     ? 'hsl(var(--destructive))'
                     : isEngineer
