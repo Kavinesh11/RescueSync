@@ -33,7 +33,7 @@ python main.py --scenario scenarios/blocked_victim.json --mode rescuesync
 # Same, but with the Pygame demo (Space=play/pause, arrows=step, 1/2/3=mode, R=restart)
 python main.py --scenario scenarios/blocked_victim.json --mode cooperative --gui
 
-# Run the test suite (33 tests: unit + the 11 scenario tests + regressions)
+# Run the test suite (42 tests: unit + scenario tests + regressions)
 pytest
 
 # Regenerate the Review-2 experiment graphs -> experiments/output/*.png
@@ -60,7 +60,9 @@ npm run dev
 Open **http://localhost:5173**. The dev server proxies `/api/*` to the
 backend on port 8000. Pick a scenario, switch between Independent /
 Cooperative / RescueSync, and scrub the timeline. Collisions flash red on
-the grid and are counted live in the metrics panel.
+the grid and are counted live in the telemetry panel, and the Mission Log
+underneath narrates the whole plan in plain English, timestamp by timestamp
+(see `CLAUDE.md` §15 for the full design-system writeup).
 
 Keyboard shortcuts (mirroring the Pygame demo): `Space` play/pause, `←`/`→`
 step, `1`/`2`/`3` switch mode, `R` restart.

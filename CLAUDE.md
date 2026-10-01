@@ -439,3 +439,68 @@ scenario validation (each rejected mistake from §3).
   static only during the planning computation itself.
 - **How does this scale?** Planning cost grows with the number of robots
   and the time horizon (`experiments.py`'s `planning_time.png`).
+
+## 15. Frontend design system
+
+The web UI's visual identity is a dark "mission-control / HUD" console, not
+a generic dashboard. This section documents what's there so it doesn't need
+re-discovering from the diff.
+
+**Typography and palette** (`frontend/index.html`, `frontend/src/index.css`):
+Space Grotesk (display type — headings, labels) and JetBrains Mono
+(technical type — ids, timestamps, coordinates, metric values) are loaded
+from Google Fonts and mapped onto Tailwind's `font-sans`/`font-mono` via
+`--font-display`/`--font-technical`. On top of the existing HSL design
+tokens (background/card/primary/destructive/success/engineer/medic/rubble/
+victim/wall/floor), there are two HUD-only accent tokens, `--hud` and
+`--hud-dim`, used for rulers, section labels, and hairline borders that
+should read as "instrument panel" rather than "card border." The page
+background carries a faint 28px grid-line pattern (`background-image` on
+`body`) to reinforce the console feel.
+
+**`.hud-frame` utility**: a corner-bracket "viewfinder" frame (two solid
+corners via `::before`/`::after`, two more via `.hud-corner-tr`/
+`.hud-corner-bl` children) used around the header's logo mark and around
+`GridCanvas`'s whole panel, instead of a generic rounded border.
+
+**`GridCanvas`**: cell size is no longer fixed — it scales to the scenario's
+own footprint (`min(56, max(30, floor(480 / max(width, height))))`) so small
+hand-written scenarios fill the panel instead of leaving dead space, while
+`large_map` (15×15) stays close to its original tuned density. Column/row
+rulers are drawn outside the grid itself. A rubble cell plays a `pop-glow`
+keyframe the instant it opens; a victim marker has a continuous soft
+`animate-ping` halo; an agent fades and scales in on its very first frame
+(`fade-scale-in`), pulses `success-pulse` the instant a Medic's rescue
+finishes, and switches to a dashed/grayscale ring when `failed`.
+
+**`MetricsPanel`**: rebuilt as a hairline "Telemetry" grid (2 columns,
+shared borders, no card padding per cell) with a `useCountUp` hook that
+animates each number from 0 to its value over ~500ms via
+`requestAnimationFrame` whenever a new plan loads — reinforces that the
+numbers just came off a fresh computation rather than being static text.
+
+**`MissionLog`** (`frontend/src/components/MissionLog.tsx`, new): a
+scrollable, timestamped narration built once per plan from the same data
+the grid renders — one line per agent deployment, rubble-reached /
+rubble-cleared, victim-reached / rescue-complete, mission failure, and one
+line per collision — sorted by `t` and dimmed (`opacity-30`) for any event
+whose `t` hasn't been reached by the scrubber yet. This is the plain-English
+read of a plan that doesn't require staring at the grid, and it's what
+`PlaybackControls` points to when a scenario has no timeline at all (every
+agent fails at `t=0`, e.g. `victim_walled_in`): *"No movement possible — see
+Mission Log."*
+
+**`PlaybackControls`**: Restart and Play are disabled when `maxT === 0`
+(nothing to play), with the Mission Log pointer shown inline instead of a
+dead play button. Clicking Play after the timeline has already finished
+restarts from `t=0` first rather than silently flipping `playing` true for
+one tick and immediately snapping back to "paused at the end."
+
+**App shell**: header is a translucent, blurred bar with a spinning
+(`animate-spin`, 6s) radar-icon HUD frame as the logo mark; the main content
+column re-plays its entrance animation (`content-fade-in`) on every
+scenario/mode switch via a `key={scenarioName-mode}` remount, so each new
+plan reads as a distinct "run" rather than a silent data swap.
+
+None of this changes `rescuesync/`'s behavior — it's presentation only, on
+top of the same `/api/plan` response described in §2/§8.
